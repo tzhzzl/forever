@@ -1,0 +1,214 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+% The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
+\usepackage{CTEX}
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\graphicspath{{image/}}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+\begin{document}
+
+\title{5G NR系统架构及核心网技术调研\\
+}
+
+\author{\IEEEauthorblockN{姓名：唐子豪}
+\IEEEauthorblockA{\textit{信息与通信工程学院} \\
+\textit{学号：2019210609}\\
+通信工程~2019211119班 \\
+}
+}
+
+\maketitle
+
+\begin{abstract}
+5GNR系统是基于正交频分复用的一种空口设计的全球性的全新5G标准，也是下一代非常重要的蜂窝组网移动技术基础，5G技术的特点是超低时延、高可靠性。在2016年，高通公司推出了频段在小于6GHz以下的5GNR原生系统和实验平台，这将是推动5G进入商业领域的具有里程碑意义的一步。6GHz频段是基于5G达到高质量覆盖的十分的关键的一步，在这个原型系统高通公司采用了中非常多的技术。2018年6月14日，华为、三星等企业发布新闻公报称，国际标准组织“第三代合作伙伴计划”（3GPP）全体会议已批准第五代移动通信技术5G NR的独立组网标准。3GPP全会批准了第五代移动通信技术标准(5G NR)独立组网功能冻结。这意味着5G NR具备了独立部署的能力，也带来全新的端到端新架构，5G正式可以进入到商用阶段。
+\end{abstract}
+
+\begin{IEEEkeywords}
+5G核心网、5G接入网、AMF认证管理功能、UPF用户端口、SMF会话管理功能
+\end{IEEEkeywords}
+
+\section{5G组网方案选择}
+
+5G网络的核心设备5G是基站，它可以实现无线覆盖以及信号在无线终端与有线通信网之间的传输。因为5G网络的频率要比4G网络高很多，而在信号传播过程中，如果频率越高，造成的衰落也越大，而且5G基站比4G的覆盖半径更小，所以5G网络从理论上来说的将比4G拥有更高的基站密度。运营商为了实现高密度需要付出巨大成本，短期内产生更高的资金压力，投资回报周期长，对于5G推广将加大难度，减缓速度。
+
+为了促进5G的推广，4G与5G融合组网的模式逐渐被纳入考虑，也就是NSA—非独立组网方案。NSA组网模式是技术对现实的一次妥协，而完美的组网方案是SA独立组网，即所有核心网和基站全部为5G，这样可以实现更低的传输时延和更高的传输速率，可以完美发挥5G的优势。
+
+\begin{figure}[h]
+	\centering\includegraphics[scale=0.4]{2}
+	\caption{图1 5G组网架构}
+\end{figure}
+
+
+
+\section{5G系统架构}
+
+5G系统最为常见系统架构采用的是5G核心网+4G增强基站+5G基站的组网模式的NSA组网。去除ng-eNB后，采用5G核心网+5G基站组网的SA组网模式。5G系统包括NG-RAN 5G接入网和5GC 5G核心网。
+
+5GC涵盖AMF、UPF两部分，外加一个SMF模块。与LTE系统相比，5G核心网实现了控制面和用户面的进一步分离。在4G核心网的MME,SGW和PGW三部分中，MME负责控制面，SGW和PGW负责用户面，三者虽然分开但在功能上还是有所交叠。5G重构了对用户平面的控制和转发功能，重构后的控制平面分为AMF和SMF两个逻辑节点。AMF主要负责移动性管理，相当于4G的MME，SMF负责会话管理功能。用户平面的UPF代替了LTE网络的SGW和PGW。也就是说，5G进行重构以后，控制面和用户面的集中度有了进一步提高并且拥有更为清晰的核心网架构。
+
+\begin{figure}[h]
+	\centering\includegraphics[scale=0.3]{6}
+	\caption{图2 5G实体功能划分}
+\end{figure}
+
+NG-RAN则由gNB和ng-eNB两种基站共同构成。gNB是5G基站，ng-eNB则是对4G的基站进行软件升级，让其接口能够支持5G核心网与Xn，有效确保了LTE的部分原有基站仍然可以继续利用。Xn接口负责实现gNB之间、ng-eNB之间，以及gNB和ng-eNB的连接。5G接入网与核心网之间通过NG接口进行连接，gNB/ng-eNB和AMF使用NG-C接口，和UPF使用NG-U接口。
+
+AMF/UPF和NG-RAN的多对多连接依靠NG接口可以实现，即一个AMF/UPF可以连接多个gNB/ng-eNB，一个gNB/ng-eNB也可以连接多个AMF/UPF。在同一AMF/UPF下的基站之间发生移动或切换时，仍然可以驻留在相同的AMF/UPF上，UE不需要发起新的注册更新。当AMF/UPF与NG-RAN之间的连接路径较长或进行新资源分配的时候，可以改变与UE连接的AMF/UPF。这里的AMF主要负责实现移动性控制，而UPF主要负责数据包的路由转发。
+
+gNB和ng-eNB的主要功能：
+
+1.无线资源管理相关功能：无线承载控制，无线接入控制，连接移动性控制，上行链路和下行链路中UE的动态资源分配
+
+2.数据的IP头压缩，加密和完整性保护
+
+3.在用户提供的信息不能确定到AFM的路由时，为在UE在附着的时候选择到AMF路由
+
+4.将用户平面数据路由到UPF
+
+5.提供控制平面信息向AMF的路由
+
+6.连接设置和释放
+
+7.寻呼消息的调度和传输
+
+8.广播消息的调度和传输
+
+9.移动性和调度的测量和测量报告配置
+
+10.上行链路中的传输级别数据包标记
+
+11.会话管理
+
+12.QoS流量管理和无线数据承载的映射
+
+13.支持处于RRC-INACTIVE状态的UE
+
+14.NAS消息的分发功能
+
+15.无线接入网络共享
+
+16.双连接
+
+17.支持NR和E-UTRA之间的连接
+
+
+\begin{figure}[h]
+	\centering\includegraphics[scale=0.7]{3}
+	\caption{图3 5G接入网总体架构}
+\end{figure}
+
+
+\subsection{NG-RAN}
+
+图3是5G无线接入网（NG-RAN）总体架构，由一组通过NG接口连接5G核心网的gNB组成。
+
+gNB是为UE提供NR用户面和控制面的终端节点，通过NG接口连接到5GC。gNB能够支持TDD、FDD模式甚至可以同时支持TDD和FDD，gNB之间通过Xn接口互连。一个gNB由多个gNB-DU和一个gNB-CU组成，F1接口实现gNB-CU和gNB-DU之间的连接，一个gNB-DU只能与一个gNB-CU相连。
+gNB-CU的全称为gNB中心单元（gNB Central Unit），主要是负责gNB的无线资源控制（RRC），业务数据适配协议（SDAP）和分组数据聚合协议（PDCP）或gNB-DU操作的en-gNB的RRC和PDCP协议的逻辑节点en-gNB为UE提供E-UTRA用户面和控制面协议，通过NG接口连接到5G核心网。
+
+gNB-DU全称gNB分布单元（gNB Distributed Unit），主要是负责gNB或en-gNB的无线链路控制，媒质接入控制和物理层的逻辑节点，gNB-CU控制其部分的操作。一个gNB-DU可以支持多个小区但是一个小区只能由一个gNB-DU支持。
+
+NG、Xn和F1是逻辑接口。5G无线接入NG-RAN分层为无线网络层和传输网络层。NG-RAN架构也就是NG-RAN的各个节点和它们之间的接口，定义为无线网络层部分。NG-Flex的结构中，每一NG-RAN节点连接到一AMF区内的所有的AMF，可以支持至少一个切片并且由NG-RAN支持。
+
+\begin{figure}[h]
+	\centering\includegraphics[scale=0.5]{5}
+	\caption{图4 5G用户终端（UE）通过gNB接入5G网络的信令流程}
+\end{figure}
+
+\subsection{5G(NR)核心单元—AMF}
+
+在5G网络中AMF是核心单元,全称Access and Mobility Management Function；负责注册、连接、可达性、移动性及与安全和访问管理和业务授权。按照3GPP设计AMF还可与non 3GPP网络单元连接，进行消息交互。AMF和NG-RAN之间的通信是通过N1接口(终端与AMF之间的逻辑接口)进行的。
+
+在5G网络中AMF通过NG接口与无线网络(NG RAN)中的基站(gNB)连接;AMF负责终端(UE)在开机后的整个生命周期内终端的注册、移动性管理及整个业务流程监控，包括初始注册；注册请求；身份响应；移动性和定期注册更新；通知响应；配置更新完成；身份验证响应；身份验证错误；身份验证失败；安全模式完成；注册完成；上行NAS信息传输；服务请求；切片请求(Nssai)；安全模式拒绝；注销请求；注销接受；5GMM消息；5G SM消息到SMF传递；与UDM进行信息数据处理；负责认证程序。
+
+在5G网络中AMF进行处理相关消息之前，需先完成与gNB间的接口建立和协议完成。其中包括:核心 - NGAP接口协议NGAP用于gNB和AMF之间通信协议(应用层协议)。核心 - SCTP 流控制传输协议，类似于数据传输的TCP协议。SCTP是在TCP基础上增加了一些功能来弥补其弱点。在4G蜂窝通信系统中SCTP是eNB和MME(4G)之间通信使用的协议。当数据通过这些接口时它们会被各种隧道协议封装。GTP是一种特定类型的隧道协议，其中U-plane数据(用户数据)通过该协议，具体在3GPP中GTP在TS 29.281中指定。
+
+\subsection{5G核心网UPF}
+
+用户平面功能（UPF）是3GPP 5G核心网系统架构的重要组成部分，主要负责5G核心网中用户平面数据包的路由和转发相关功能。UPF在5G的边缘计算和网络切片技术中发挥着低延迟和大带宽的重要作用。UPF是5G网络和多接入边缘计算（MEC）之间的连接锚点。所有的核心网络数据必须由UPF转发，然后才能流向外部网络。MEC是5G业务应用的标志能力。基于5GC的C/U分裂架构，控制面NF集中部署在中心DC，UPF下沉到网络边缘，可以降低传输时延，实现数据流的本地分流，缓解核心网的数据传输压力，从而提高网络数据处理效率，满足垂直行业对网络超低时延、超高带宽和安全性的需求。UPF作为5GC网络的用户平面网元，主要支持UE业务数据的路由和转发、数据和业务识别、动作和策略执行等。UPF通过N4接口与会话管理功能（SMF）交互，由SMF直接控制和管理，并根据SMF发布的各种策略执行业务流处理。
+
+\subsection{5G会话管理功能（SMF）}
+
+在5G核心(5GC)网中，会话管理功能(SMF)与接入和移动功能(AMF)交互，通过Nsmf基于服务的接口建立、修改和释放PDU会话。当UE发起PDU会话请求时,服务AMF选择将建立和管理该会话的SMF。该决定部分由AMF通过 Nudm服务接收的订阅数据通知。
+
+SMF依次确定请求的PDU会话是否符合移动用户的订阅，如果请求有效，则选择将托管PDU会话的UPF。SMF通过N4接口与UPF交互以指示UPF建立或释放PDU会话，并在指示时将适用于特定PDU会话的策略推送到UPF。
+
+一个UE可能有多个PDU会话，它们可由不同的SMF管理，也可能托管在不同的UPF上。
+
+AMF使用Nsmf-PDU-Session服务提供的操作(在TS 29.502中指定)来触发SMF中的PDU会话建立、修改和释放。SMF为其管理的所有活动PDU会话保留会话管理(SM) 上下文。如果它确定会话可能很快被重新激活，它也可以为不活动的PDU会话保留SM上下文。除了在PDU会话和服务AMF之间创建关联之外，SM上下文还包含管理PDU会话的参数。
+
+感兴趣的网络功能可以订阅来自SMF的SM上下文状态通知。当主题SM上下文由于UE发起或网络发起的释放或由于建立后的PDU会话失败而被释放时，SMF将依次通知他们。
+
+\section{5G无线接入网（NG-RAN）节点中用户设备（UE）的关联}
+
+NG-RAN节点中存在许多类型UE的联系：例如储存一UE的所有信息的“上下文”，还有用于NG/XnAP UE关联信息的UE和Xn与逻辑NG之间的连接。 
+
+上下文是一个关联到一个UE的NG-RAN节点中的信息组。这个信息组拥有对UE用于维持NG-RAN服务要求所需要的数据。一个NG-RAN的UE上下文，是在一个UE传送给RRC CONNECTED时产生的，也可能是在目标NG-RAN节点中切换准备期间资源配置切换之后产生的。此时，UE的状态信息，安全性信息、UE容量信息和关联到逻辑的NG连接的UE识别，都会被包括在上下文中。对于双连接，一个上下文的成功产生也是在次要的5G无线接入网（S-NG-RAN）节点完成S-NG-RAN节点附加的准备处理之后才建立的。如果在上下文建立或编辑修改的过程中，在需要建立无线承载时，UE具有通过信令送到接收节点，然后作为上下文建立或修改处理程序的一部分。 
+
+承载上下文是一个在一gNB-CU-UP节点中，关联到一个UE为通信通过E1接口的信息组，可包括关于数据无线承载，协议数据单元会话和关联到UE的QoS流。信息组存有保持用户面面向用户服务（业务）所需的相关数据。
+
+与用户关联的逻辑NG/Xu/F1/E1连接：NGAP, XnAP, F1AP和E1AP提供控制面与关联UE，分别通过NG-C, Xn-C, F1-C或E1接口进行信息交换的方法。
+
+一个关联UE的逻辑连接是在NG/Xn/F1对等节点间最初NGAP/XnAP/F1AP信息交换期间建立的。连接保持的时间，和关联用户NG/XnAP/F1AP信息经NG/Xn/F1接口进行交换所占用的时间相等。关联UE逻辑NG连接需利用标识AMF UE NGAP ID和RANUE NGAP ID。关联UE逻辑Xn连接需利用标识Old NG-RAN node UE XnAP ID和New NG-RAN node UE XnAP ID,或是M-NG-RAN node UE XnAP ID和S-NG-N node UE XnAP ID。关联UE逻辑F1连接需利用标识gNB-CU UE F1AP ID和gNB-DU UE F1AP ID。当一节点（AMF或gNB）接收一关联UE NGAP/ XnAP/F1AP信息时，节点基于NGAP/XnAP/F1AP ID检索关联UE。 
+
+关联UE的信令：是一种与一个UE的NGAP/ XnAP/F1AP，通过关联UE逻辑NG/Xn/F1连接的关联信息。
+
+\section{RRC的连接与重建}
+
+\begin{figure}[h]
+	\centering\includegraphics[scale=0.7]{4}
+	\caption{图5 RRC重建过程}
+\end{figure}
+
+用于用户（UE）重建RRC连接的过程说明如下： 
+
+1. UE给gNB-DU发送报头。 
+
+2. 分配新的小区无线网络临时识别（C-RNTI）并使用RAR给UE答复。
+
+3. UE给gNB-DU发送RRC重建申请信息，该信息存有旧的C-RNTI和旧的PCI。
+ 
+4. 当获得UE批准后，将RRC信息和UE用的相应低层配置，列入INITIAL UL RRC MESSAGE 
+
+TRANSFER信息中并传送给gNB-CU。NITIAL UL RRC MESSAGE TRANSFER信息应包含C-RNTI。 
+
+5. gNB-CU将包括RRC重建的信息传送给gNB-DU。若UE在最近服务的gNB-DU申请重建RRC连接的同时，gNB-CU所发DL RRC MESSAGE TRANSFER信息将包含旧的gNB-DU UE F1AP ID。 
+
+6. gNB-DU按照旧的gNB-DU UE F1AP ID恢复UE上下文，用新的C-RNTI/PCI取代旧的，给UE发送RRC重建信息。 
+
+7～8. UE发送RRC重建完成信息给gNB-DU。gNB-DU将RRC信息封装UL RRC MESSAGE 
+TRANSFER信息中并发送给gNB-CU。 
+
+9 ～10 . gNB-CU通过发送UECON EXT MODIFICIATION REQUEST进行UE的上下文编辑处理，包含了数据无线承载（DRB）用来修改和释放表格。gNB-DU用UE CONTEXT MODIFICIATION RESPONSE实现信息答复。 
+ 
+11～12. gNB-CU将RRC重构信息包括到DL RRC MESSAGE TRANSFER信息中并传送gNB-DU， 
+gNB-DU再将其前传给UE。 
+
+13～14. UE发送RRC重构完成信息给gNB-DU，gNB-DU再将其前传给gNB-CU。
+
+
+
+
+\section{结束语}
+
+接入网系统可以给用户提供独立的接入接口，和部署场景、业务场景密切联系。接入网目的是带给用户更高效、便利地接入网络的体验。核心网系统为用户接入技术的多样性给出了统一的集合，它既可以提供用户业务服务，又能为运营商业务提供编排的空间，核心网追求的是可扩展和兼容性。5GS的接入网系统并不像LTE那样只由一个制式的接入网技术构成，而是由5GNR接入网技术和改良后的LTE接入网E-UTRAN组成，在3GPP中统称为NG-RAN。具体来讲，NG-eNB就是改良后的LTE接入网的网络节点，gNB5GS的用户面功能依靠分布在外部网络和NG-RAN之间的UPF来负责5G接入网网络节点。UPF是LTE SGW与PGW用户面功能的相互结合，它拥有比LTE SGW+PGW更加简洁和集中的用户面结构。UPF 的出现为SDN和NFV技术的实现奠定了基础，也为实现边缘计算铺平了道路。用户面和控制面分离，造就了更具灵活性的使用户面，可以提供更为个性化的路由服务，这也给降低时延奠定了基础。
+
+
+
+\newpage
+\begin{thebibliography}{00}
+	\bibitem{b1} 钟旻.3GPP关于5G若干技术规范摘录(二)：NG-RAN总体架构(Ⅰ)[J].数字通信世界,2022(01):1-3+6.
+	\bibitem{b2} 钟旻.3GPP关于5G若干技术规范摘录(二)：NG-RAN总体架构(Ⅱ)[J].数字通信世界,2022(02):1-4+9.
+	\bibitem{b3} 付秀花.NG-RAN系统架构和部署问题[J].中国新通信,2019,21(23):82.
+	\bibitem{b4} 穆佳,王勇,马瑞涛,任驰,陈婉珺.面向3GPP R16的5G核心网演进策略研究[J].邮电设计技术,2022(02):1-8.
+	\bibitem{b5} 薛瑞卿.浅析5GSA网络SMF/UPF网元兼容4GSGW功能的改造[J].长江信息通信,2022,35(11):161-164.
+	\bibitem{b6} 陈曦.5G核心网UPF硬件加速技术研究[J].信息技术与信息化,2021(11):190-192.
+	\bibitem{b7} 刘大畅,丁浩,曾晶.5G核心网网络架构及关键技术分析[J].中国新通信,2021,23(01):81-82.
+\end{thebibliography}
+
+\end{document}% 结束文档编辑，后面写啥都编译不出来
